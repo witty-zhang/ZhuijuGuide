@@ -1,15 +1,15 @@
 package com.lzzhang.zhuijuguide.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Refresh
@@ -19,7 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -31,31 +30,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.lzzhang.zhuijuguide.model.WorkSummary
 import com.lzzhang.zhuijuguide.ui.GuideUiState
-import com.lzzhang.zhuijuguide.ui.components.PosterCard
+import com.lzzhang.zhuijuguide.ui.components.CategoryBar
+import com.lzzhang.zhuijuguide.ui.components.ResourceListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     state: GuideUiState,
     onQueryChange: (String) -> Unit,
-    onReload: () -> Unit,
-    onWorkClick: (WorkSummary) -> Unit,
-    onFavoriteClick: (WorkSummary) -> Unit,
+    onCategoryChange: (String) -> Unit,
+    onRefresh: () -> Unit,
+    onResourceClick: (com.lzzhang.zhuijuguide.model.MediaResource) -> Unit,
+    onFavoriteClick: (String) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Column {
-                        Text(if (state.isSearchMode) "搜索" else "推荐")
+                        Text("追剧指南")
                         Text(
-                            text = if (state.isSearchMode) {
-                                state.query.trim()
-                            } else {
-                                "来自 ${state.sources.size} 个数据源"
-                            },
+                            text = "${state.allResources.size} 个资源 · 状态由数据源提供",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
@@ -64,39 +60,37 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    if (state.isLoading) {
+                    if (state.isRefreshing) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .padding(horizontal = 18.dp)
-                                .padding(3.dp),
+                                .size(24.dp),
                             strokeWidth = 2.dp,
                         )
-                    } else if (!state.isSearchMode) {
-                        IconButton(onClick = onReload) {
-                            Icon(Icons.Rounded.Refresh, contentDescription = "重新加载推荐")
+                    } else {
+                        IconButton(onClick = onRefresh) {
+                            Icon(Icons.Rounded.Refresh, contentDescription = "刷新数据源")
                         }
                     }
                 },
             )
         },
     ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
+            item {
                 OutlinedTextField(
                     value = state.query,
                     onValueChange = onQueryChange,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 4.dp),
-                    placeholder = { Text("搜索影片，例如 moon、launch") },
+                    placeholder = { Text("搜索资源、分类或标签") },
                     leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                     trailingIcon = {
                         if (state.query.isNotEmpty()) {
@@ -110,59 +104,42 @@ fun HomeScreen(
                 )
             }
 
-            if (state.isSearching) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                }
+            item {
+                CategoryBar(
+                    categories = state.categories,
+                    selected = state.category,
+                    onSelected = onCategoryChange,
+                )
             }
 
             when {
-                state.isLoading -> item(span = { GridItemSpan(maxLineSpan) }) {
-                    GridStatus("正在加载推荐…", showSpinner = true)
-                }
-
-                state.isSearchMode && !state.isSearching && state.results.isEmpty() -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        EmptySearch(
-                            title = "没有找到相关内容",
-                            description = "换个关键词试试，例如 apollo、artemis",
-                        )
+                state.isLoading -> item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 56.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
                     }
                 }
 
-                !state.isSearchMode && state.recommendations.isEmpty() -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        EmptySearch(
-                            title = "推荐加载失败",
-                            description = "检查网络后点右上角重新加载",
-                        )
+                state.visibleResources.isEmpty() -> {
+                    item {
+                        EmptySearch("没有匹配的资源", "换个关键词或分类再试一次")
                     }
                 }
 
-                else -> items(state.visibleWorks, key = WorkSummary::id) { work ->
-                    PosterCard(
-                        work = work,
-                        isFavorite = work.id in state.favoriteIds,
-                        onClick = { onWorkClick(work) },
-                        onFavoriteClick = { onFavoriteClick(work) },
+                else -> items(state.visibleResources, key = { it.id }) { resource ->
+                    ResourceListItem(
+                        resource = resource,
+                        isFavorite = resource.id in state.favorites,
+                        onClick = { onResourceClick(resource) },
+                        onFavoriteClick = { onFavoriteClick(resource.id) },
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun GridStatus(text: String, showSpinner: Boolean) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 96.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        if (showSpinner) CircularProgressIndicator()
-        Text(text, style = MaterialTheme.typography.bodyMedium)
     }
 }
 

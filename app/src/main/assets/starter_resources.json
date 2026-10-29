@@ -1,605 +1,486 @@
 {
-  "version": 3,
+  "version": 2,
   "updated_at": "2026-10-28",
-  "source": "awesome-zhuiju-free · 在线影视 (CC BY 4.0)",
   "resources": [
     {
-      "id": "www-kankanya-me",
-      "title": "看看鸭",
-      "description": "高清无广告新站",
-      "url": "https://www.kankanya.me/",
-      "category": "在线影视",
+      "id": "cctv-live",
+      "title": "央视网直播",
+      "description": "央视网官方电视直播入口，频道和可用范围以官网实际提供为准。",
+      "url": "https://tv.cctv.com/live/",
+      "category": "国内官方",
       "status": "可访问",
+      "risk": "低",
       "rating": 5,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["官方", "直播", "CCTV"]
     },
     {
-      "id": "ys-cxkjg-cn",
-      "title": "创享影视",
-      "description": "无广告三网高峰秒播",
-      "url": "https://ys.cxkjg.cn/",
-      "category": "在线影视",
+      "id": "cctv-video",
+      "title": "央视频",
+      "description": "央视官方视频平台，提供新闻、综艺、体育和部分免费节目。",
+      "url": "https://www.yangshipin.cn/",
+      "category": "国内官方",
       "status": "可访问",
+      "risk": "低",
       "rating": 5,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["官方", "点播", "直播"]
     },
     {
-      "id": "tv-lxyy-club",
-      "title": "洛雪TV",
-      "description": "4K无广告",
-      "url": "https://tv.lxyy.club/",
-      "category": "在线影视",
+      "id": "mgtv",
+      "title": "芒果 TV",
+      "description": "湖南广电官方视频平台，免费专区包含部分综艺、电视剧和电影。",
+      "url": "https://www.mgtv.com/",
+      "category": "国内官方",
       "status": "可访问",
+      "risk": "低",
       "rating": 5,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["官方", "综艺", "电视剧"]
     },
     {
-      "id": "www-kanmovie-com",
-      "title": "西瓜影视",
-      "description": "没有搜不到的资源",
-      "url": "https://www.kanmovie.com/",
-      "category": "在线影视",
+      "id": "migu-video",
+      "title": "咪咕视频",
+      "description": "综合视频平台，提供体育、影视和部分免费直播内容。",
+      "url": "https://www.miguvideo.com/",
+      "category": "国内官方",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["官方", "体育", "直播"]
     },
     {
-      "id": "www-kkys14-com",
-      "title": "可可影视",
-      "description": "最新Netflix新剧",
-      "url": "https://www.kkys14.com/",
-      "category": "在线影视",
-      "status": "失效",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "zip0-com-r-kbdig8",
-      "title": "ZIP0",
-      "description": "在线影视搜索与播放",
-      "url": "https://zip0.com/?r=KBDIG8",
-      "category": "在线影视",
+      "id": "bilibili",
+      "title": "哔哩哔哩",
+      "description": "官方授权番剧、纪录片、影视和用户投稿内容混合平台。",
+      "url": "https://www.bilibili.com/",
+      "category": "免费影视",
       "status": "可访问",
+      "risk": "低",
       "rating": 5,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["番剧", "纪录片", "影视"]
     },
     {
-      "id": "juok3-top",
-      "title": "剧OK",
-      "description": "最新电视剧、最新电影",
-      "url": "https://juok3.top/",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "www-juzong01-me",
-      "title": "剧踪影院",
-      "description": "海内外 SVIP 超前更新",
-      "url": "https://www.juzong01.me/",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "jianyunys-com",
-      "title": "简云影视",
-      "description": "纯净无广告/1080P高清秒播",
-      "url": "https://jianyunys.com/",
-      "category": "在线影视",
-      "status": "失效",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "4k01-pianku-online",
-      "title": "片库",
-      "description": "纯净无广告/1080P高清秒播",
-      "url": "https://4k01.pianku.online/",
-      "category": "在线影视",
+      "id": "xigua-video",
+      "title": "西瓜视频",
+      "description": "提供影视、纪录片、短视频和部分广告支持免费内容。",
+      "url": "https://www.ixigua.com/",
+      "category": "免费影视",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["免费", "电影", "电视剧"]
     },
     {
-      "id": "www-77dpw-vip",
-      "title": "66 大片网",
-      "description": "免费电影在线观看",
-      "url": "https://www.77dpw.vip/",
-      "category": "在线影视",
+      "id": "1905-movie",
+      "title": "1905 电影网",
+      "description": "电影频道旗下平台，提供电影资讯、经典影片和部分免费内容。",
+      "url": "https://www.1905.com/",
+      "category": "免费影视",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["电影", "官方"]
     },
     {
-      "id": "www-didahd-xyz",
-      "title": "嘀嗒影视",
-      "description": "高分电影聚集地，超清秒播",
-      "url": "https://www.didahd.xyz/",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "zhuiying3-cc",
-      "title": "追影",
-      "description": "蓝光高清、无广告免费在线秒播",
-      "url": "https://zhuiying3.cc/",
-      "category": "在线影视",
+      "id": "kankanews",
+      "title": "看看新闻",
+      "description": "上海广播电视台官方新闻与视频平台。",
+      "url": "https://www.kankanews.com/",
+      "category": "国内官方",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["上海", "新闻", "官方"]
     },
     {
-      "id": "wbbb1-com",
-      "title": "歪比巴卜",
-      "description": "高清视频免费在线观看",
-      "url": "https://wbbb1.com/",
-      "category": "在线影视",
-      "status": "失效",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "www-kxyy1-cc",
-      "title": "开心影院",
-      "description": "最新电影热播电视剧",
-      "url": "https://www.kxyy1.cc/",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "dhvideo-cc",
-      "title": "豆花电影网",
-      "description": "最新免费电影_在线观看",
-      "url": "https://dhvideo.cc/",
-      "category": "在线影视",
+      "id": "jstv",
+      "title": "荔枝网",
+      "description": "江苏省广播电视总台官方平台，提供新闻、节目和部分直播入口。",
+      "url": "https://www.jstv.com/",
+      "category": "国内官方",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["江苏", "新闻", "官方"]
     },
     {
-      "id": "fdzys-com",
-      "title": "饭搭子影视",
-      "description": "最新热门电影电视剧动漫综艺",
-      "url": "https://fdzys.com",
-      "category": "在线影视",
+      "id": "cztv",
+      "title": "中国蓝新闻",
+      "description": "浙江广播电视集团官方新闻与视频平台。",
+      "url": "https://www.cztv.com/",
+      "category": "国内官方",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["浙江", "新闻", "官方"]
     },
     {
-      "id": "www-lsjys11-com",
-      "title": "SA视频",
-      "description": "最新电影电视剧动漫综艺",
-      "url": "https://www.lsjys11.com/",
-      "category": "在线影视",
+      "id": "gdtv",
+      "title": "广东广播电视台",
+      "description": "广东广播电视台官方网站，提供节目、新闻和直播栏目入口。",
+      "url": "https://www.gdtv.cn/",
+      "category": "国内官方",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["广东", "新闻", "官方"]
     },
     {
-      "id": "www-duse0-com",
-      "title": "91毒舌",
-      "description": "最新Netflix新剧、4K高清",
-      "url": "https://www.duse0.com/",
-      "category": "在线影视",
-      "status": "失效",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "www-hhkan2-com",
-      "title": "好好看",
-      "description": "4K高清Netflix新剧（可访问需梯子）",
-      "url": "https://www.hhkan2.com/",
-      "category": "在线影视",
-      "status": "失效",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "ddmf-net",
-      "title": "蛋蛋魔法",
-      "description": "国内外热播剧，有福利伦理片（需梯子）",
-      "url": "https://ddmf.net",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "www-sorani-net",
-      "title": "青空次元",
-      "description": "网友称最夯动漫在线站",
-      "url": "https://www.sorani.net",
-      "category": "在线影视",
+      "id": "btime",
+      "title": "北京时间",
+      "description": "北京广播电视台官方新闻与视频平台。",
+      "url": "https://www.btime.com/",
+      "category": "国内官方",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["北京", "新闻", "官方"]
     },
     {
-      "id": "www-appmovie-art",
-      "title": "APP影院",
-      "description": "国内外热播剧，纯净无广告",
-      "url": "https://www.appmovie.art",
-      "category": "在线影视",
+      "id": "tubi",
+      "title": "Tubi",
+      "description": "广告支持的免费电影、电视剧和 FAST 频道平台，服务范围受地区限制。",
+      "url": "https://tubitv.com/",
+      "category": "国际免费",
       "status": "可访问",
+      "risk": "低",
       "rating": 5,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["FAST", "免费", "广告支持"]
     },
     {
-      "id": "www-aeete-com",
-      "title": "Auete影视",
-      "description": "蓝光超清精品影视，发布页auete.pro",
-      "url": "https://www.aeete.com",
-      "category": "在线影视",
+      "id": "pluto-tv",
+      "title": "Pluto TV",
+      "description": "提供广告支持的免费直播频道和点播内容，开放地区会变化。",
+      "url": "https://pluto.tv/",
+      "category": "国际免费",
       "status": "可访问",
+      "risk": "低",
       "rating": 5,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["FAST", "直播", "免费"]
     },
     {
-      "id": "dyrs-tv",
-      "title": "电影人生",
-      "description": "高清电影在线观看",
-      "url": "https://dyrs.tv",
-      "category": "在线影视",
+      "id": "plex-free",
+      "title": "Plex 免费影视",
+      "description": "Plex 提供的广告支持电影、电视剧和直播频道入口。",
+      "url": "https://watch.plex.tv/",
+      "category": "国际免费",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["FAST", "免费", "影视"]
     },
     {
-      "id": "www-netflixgc-com",
-      "title": "奈飞工厂",
-      "description": "最新美剧，无广告（需梯子）",
-      "url": "https://www.netflixgc.com",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "www-ppnix-com-cn",
-      "title": "PPnix",
-      "description": "在线观看电影电视剧",
-      "url": "https://www.ppnix.com/cn/",
-      "category": "在线影视",
+      "id": "samsung-tv-plus",
+      "title": "Samsung TV Plus",
+      "description": "三星提供的免费广告支持直播频道服务，设备和地区范围有限制。",
+      "url": "https://www.samsungtvplus.com/",
+      "category": "国际免费",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["FAST", "直播", "免费"]
     },
     {
-      "id": "www-tdgo-shop",
-      "title": "白嫖者联盟",
-      "description": "热门热播剧，无广告速度快（需梯子）",
-      "url": "https://www.tdgo.shop",
-      "category": "在线影视",
+      "id": "rakuten-tv",
+      "title": "Rakuten TV",
+      "description": "提供免费广告支持频道、电影和电视内容，主要面向欧洲地区。",
+      "url": "https://rakuten.tv/",
+      "category": "国际免费",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["FAST", "欧洲", "免费"]
     },
     {
-      "id": "kuhh4jo-com",
-      "title": "爱电影",
-      "description": "最新热门电影/电视剧（需梯子）",
-      "url": "https://kuhh4jo.com",
-      "category": "在线影视",
+      "id": "youtube-free-movies",
+      "title": "YouTube 免费电影",
+      "description": "YouTube 广告支持的免费电影专区，片库和可用范围按地区变化。",
+      "url": "https://www.youtube.com/feed/storefront",
+      "category": "国际免费",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["电影", "广告支持", "地区限制"]
     },
     {
-      "id": "www-937tv-vip",
-      "title": "937影视",
-      "description": "看全网影视剧（需梯子）",
-      "url": "https://www.937tv.vip",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "gaze-red",
-      "title": "注视影视",
-      "description": "国内海外影视剧资源（需梯子）",
-      "url": "https://gaze.red/",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "skr-skr1-cc-666",
-      "title": "樱之空",
-      "description": "国内外各种动漫都比较齐全",
-      "url": "https://skr.skr1.cc:666/",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "www-aipan-me",
-      "title": "爱盼",
-      "description": "4K影视资源聚合站",
-      "url": "https://www.aipan.me/",
-      "category": "在线影视",
+      "id": "bilibili-tv",
+      "title": "Bilibili 国际版",
+      "description": "面向海外用户的哔哩哔哩官方视频平台，部分番剧和视频有地区限制。",
+      "url": "https://www.bilibili.tv/",
+      "category": "国际免费",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["番剧", "动画", "官方"]
     },
     {
-      "id": "zndy-top",
-      "title": "宅男影视",
-      "description": "想看就看",
-      "url": "https://zndy.top/",
-      "category": "在线影视",
+      "id": "internet-archive",
+      "title": "Internet Archive",
+      "description": "公共领域影片、历史影像、音频和开放馆藏，授权状态需要逐项确认。",
+      "url": "https://archive.org/details/movies",
+      "category": "公共领域",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["公共领域", "历史影像", "资料馆"]
     },
     {
-      "id": "naifei-fyi",
-      "title": "奈飞工厂",
-      "description": "国区可访问，资源无广",
-      "url": "https://naifei.fyi/",
-      "category": "在线影视",
-      "status": "失效",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "bubuzhuiju-com",
-      "title": "布布追剧",
-      "description": "速度快，有广告能接受",
-      "url": "https://bubuzhuiju.com",
-      "category": "在线影视",
+      "id": "loc-screening-room",
+      "title": "Library of Congress Screening Room",
+      "description": "美国国会图书馆的历史电影和公共影像馆藏。",
+      "url": "https://www.loc.gov/collections/national-screening-room/",
+      "category": "公共领域",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["公共领域", "历史", "纪录片"]
     },
     {
-      "id": "www-ymck-pro",
-      "title": "影猫仓库",
-      "description": "热门影视剧，有广告能接受",
-      "url": "https://www.ymck.pro",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "www-dbku-tv",
-      "title": "独播库",
-      "description": "页面无广告，纯净",
-      "url": "https://www.dbku.tv",
-      "category": "在线影视",
+      "id": "wikimedia-videos",
+      "title": "Wikimedia Commons 视频",
+      "description": "开放授权视频和动画资源，每个文件都需要单独查看许可证。",
+      "url": "https://commons.wikimedia.org/wiki/Category:Videos",
+      "category": "公共领域",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["开放授权", "视频", "知识共享"]
     },
     {
-      "id": "iyf-tv",
-      "title": "爱壹帆",
-      "description": "海外华人影视站（需梯子/有VIP限制）",
-      "url": "https://iyf.tv",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "libviobd-com",
-      "title": "LIBVIO",
-      "description": "海外影视的老牌网站，发布页www.libvio.app",
-      "url": "https://libviobd.com",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "novipnoad-org",
-      "title": "No影视",
-      "description": "海外影视剧资源聚合站（需梯子）",
-      "url": "https://novipnoad.org/",
-      "category": "在线影视",
-      "status": "受限",
-      "rating": 5,
-      "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
-    },
-    {
-      "id": "www-sotvla-cc",
-      "title": "搜TV啦",
-      "description": "国内海外高清影视剧资源",
-      "url": "https://www.sotvla.cc/",
-      "category": "在线影视",
+      "id": "nasa-plus",
+      "title": "NASA+",
+      "description": "NASA 官方流媒体平台，提供航天、科学和纪录片内容。",
+      "url": "https://plus.nasa.gov/",
+      "category": "公共领域",
       "status": "可访问",
+      "risk": "低",
       "rating": 5,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["NASA", "科学", "纪录片"]
     },
     {
-      "id": "www-4kvm-cc",
-      "title": "4k影视",
-      "description": "有广告能接受（需梯子/VIP限制）",
-      "url": "https://www.4kvm.cc/",
-      "category": "在线影视",
+      "id": "nfb",
+      "title": "National Film Board of Canada",
+      "description": "加拿大国家电影局官方平台，提供部分免费纪录片和动画。",
+      "url": "https://www.nfb.ca/",
+      "category": "公共领域",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["纪录片", "动画", "官方"]
     },
     {
-      "id": "www1-aikanbot-com",
-      "title": "爱看机器人",
-      "description": "热门电影电视剧（有跳转广告）",
-      "url": "https://www1.aikanbot.com",
-      "category": "在线影视",
+      "id": "prelinger-archives",
+      "title": "Prelinger Archives",
+      "description": "Internet Archive 中的广告、教育片和历史影像馆藏。",
+      "url": "https://archive.org/details/prelinger",
+      "category": "公共领域",
       "status": "可访问",
-      "rating": 5,
+      "risk": "低",
+      "rating": 4,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["历史", "资料馆", "公共领域"]
     },
     {
-      "id": "www-nfyingshi-com",
-      "title": "奈菲影视",
-      "description": "热门美剧（需梯子/有VIP限制）",
-      "url": "https://www.nfyingshi.com",
-      "category": "在线影视",
+      "id": "dw-english",
+      "title": "DW English Live",
+      "description": "德国之声英语新闻和纪录片直播入口。",
+      "url": "https://www.dw.com/en/live-tv/channel-english",
+      "category": "新闻直播",
       "status": "可访问",
+      "risk": "低",
       "rating": 5,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["新闻", "直播", "官方"]
     },
     {
-      "id": "www-czzymovie-com",
-      "title": "厂长资源",
-      "description": "高清、秒播不卡顿，有广告",
-      "url": "https://www.czzymovie.com",
-      "category": "在线影视",
-      "status": "受限",
+      "id": "france24",
+      "title": "France 24 Live",
+      "description": "法国国际新闻频道官方直播和新闻视频入口。",
+      "url": "https://www.france24.com/en/live",
+      "category": "新闻直播",
+      "status": "可访问",
+      "risk": "低",
       "rating": 5,
       "last_checked": "2026-10-28",
-      "tags": [
-        "在线影视"
-      ]
+      "tags": ["新闻", "直播", "官方"]
+    },
+    {
+      "id": "al-jazeera",
+      "title": "Al Jazeera Live",
+      "description": "半岛电视台英语频道的官方新闻直播入口。",
+      "url": "https://www.aljazeera.com/live",
+      "category": "新闻直播",
+      "status": "可访问",
+      "risk": "低",
+      "rating": 4,
+      "last_checked": "2026-10-28",
+      "tags": ["新闻", "直播", "官方"]
+    },
+    {
+      "id": "euronews",
+      "title": "Euronews Live",
+      "description": "欧洲新闻台官方直播与新闻视频入口。",
+      "url": "https://www.euronews.com/live",
+      "category": "新闻直播",
+      "status": "可访问",
+      "risk": "低",
+      "rating": 4,
+      "last_checked": "2026-10-28",
+      "tags": ["新闻", "直播", "官方"]
+    },
+    {
+      "id": "reuters-video",
+      "title": "Reuters Video",
+      "description": "路透社官方新闻视频与现场报道入口。",
+      "url": "https://www.reuters.com/video/",
+      "category": "新闻直播",
+      "status": "可访问",
+      "risk": "低",
+      "rating": 4,
+      "last_checked": "2026-10-28",
+      "tags": ["新闻", "视频", "官方"]
+    },
+    {
+      "id": "bloomberg-live",
+      "title": "Bloomberg Live",
+      "description": "彭博社官方市场新闻与部分直播视频入口。",
+      "url": "https://www.bloomberg.com/live",
+      "category": "新闻直播",
+      "status": "可访问",
+      "risk": "低",
+      "rating": 4,
+      "last_checked": "2026-10-28",
+      "tags": ["财经", "新闻", "直播"]
+    },
+    {
+      "id": "opensubtitles",
+      "title": "OpenSubtitles",
+      "description": "字幕搜索与下载服务，下载前请确认影片版本和网站使用条款。",
+      "url": "https://www.opensubtitles.org/",
+      "category": "字幕",
+      "status": "可访问",
+      "risk": "低",
+      "rating": 4,
+      "last_checked": "2026-10-28",
+      "tags": ["字幕"]
+    },
+    {
+      "id": "iptv-org",
+      "title": "iptv-org/iptv",
+      "description": "全球公开 IPTV 流索引，只代表公开可访问，不代表所有频道均有播放授权。",
+      "url": "https://github.com/iptv-org/iptv",
+      "category": "索引工具",
+      "status": "可访问",
+      "risk": "中",
+      "rating": 5,
+      "last_checked": "2026-10-28",
+      "tags": ["IPTV", "开源", "公开索引"]
+    },
+    {
+      "id": "free-tv-iptv",
+      "title": "Free-TV/IPTV",
+      "description": "社区维护的公开 IPTV 列表，使用前需要逐个频道核验来源。",
+      "url": "https://github.com/Free-TV/IPTV",
+      "category": "索引工具",
+      "status": "可访问",
+      "risk": "中",
+      "rating": 4,
+      "last_checked": "2026-10-28",
+      "tags": ["IPTV", "社区列表", "M3U"]
+    },
+    {
+      "id": "guovin-iptv-api",
+      "title": "Guovin/iptv-api",
+      "description": "IPTV 源自动采集、测速和筛选工具，本身不是内容授权来源。",
+      "url": "https://github.com/Guovin/iptv-api",
+      "category": "索引工具",
+      "status": "可访问",
+      "risk": "中",
+      "rating": 4,
+      "last_checked": "2026-10-28",
+      "tags": ["IPTV", "检测", "开源"]
+    },
+    {
+      "id": "awesome-zhuiju-free",
+      "title": "Awesome Zhuiju Free",
+      "description": "社区维护的追剧资源导航项目，提供资源目录和每日可用性记录。",
+      "url": "https://github.com/laoma528/awesome-zhuiju-free",
+      "category": "索引工具",
+      "status": "可访问",
+      "risk": "中",
+      "rating": 4,
+      "last_checked": "2026-10-28",
+      "tags": ["资源导航", "社区维护", "开源"]
+    },
+    {
+      "id": "apple-hls-test",
+      "title": "Apple HLS 播放器测试",
+      "description": "Apple 官方 HLS 示例流，用于验证 App 内部播放器是否正常。",
+      "url": "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",
+      "category": "测试源",
+      "status": "可访问",
+      "risk": "低",
+      "rating": 5,
+      "last_checked": "2026-10-28",
+      "tags": ["HLS", "测试", "Apple"]
+    },
+    {
+      "id": "jellyfin",
+      "title": "Jellyfin",
+      "description": "开源家庭媒体服务器，可播放你合法拥有的媒体文件。",
+      "url": "https://jellyfin.org/",
+      "category": "开源工具",
+      "status": "可访问",
+      "risk": "低",
+      "rating": 5,
+      "last_checked": "2026-10-28",
+      "tags": ["开源", "媒体库", "自建"]
+    },
+    {
+      "id": "vlc-android",
+      "title": "VLC for Android",
+      "description": "开源跨平台播放器，可播放用户自行提供的合法网络串流。",
+      "url": "https://www.videolan.org/vlc/download-android.html",
+      "category": "开源工具",
+      "status": "可访问",
+      "risk": "低",
+      "rating": 5,
+      "last_checked": "2026-10-28",
+      "tags": ["开源", "播放器", "HLS"]
+    },
+    {
+      "id": "kodi",
+      "title": "Kodi",
+      "description": "开源家庭媒体中心，适合整理并播放自有媒体文件。",
+      "url": "https://kodi.tv/download/android/",
+      "category": "开源工具",
+      "status": "可访问",
+      "risk": "低",
+      "rating": 4,
+      "last_checked": "2026-10-28",
+      "tags": ["开源", "媒体中心", "Android"]
     }
   ]
 }

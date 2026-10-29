@@ -1,5 +1,7 @@
 package com.lzzhang.zhuijuguide.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.util.Base64
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
@@ -17,8 +19,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -27,11 +33,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.lzzhang.zhuijuguide.model.MediaResource
+import com.lzzhang.zhuijuguide.ui.components.ResourceDetailSheet
 import com.lzzhang.zhuijuguide.ui.screens.FavoritesScreen
 import com.lzzhang.zhuijuguide.ui.screens.HomeScreen
 import com.lzzhang.zhuijuguide.ui.screens.PlayerScreen
 import com.lzzhang.zhuijuguide.ui.screens.SettingsScreen
-import com.lzzhang.zhuijuguide.ui.screens.WorkDetailScreen
+import kotlinx.coroutines.launch
 
 @Composable
 fun GuideApp(viewModel: GuideViewModel) {
@@ -40,10 +48,20 @@ fun GuideApp(viewModel: GuideViewModel) {
     val currentEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentEntry?.destination?.route
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var selectedResource by remember { mutableStateOf<MediaResource?>(null) }
 
-    val openWork: (com.lzzhang.zhuijuguide.model.WorkSummary) -> Unit = { work ->
-        viewModel.openWork(work)
-        navController.navigate("work")
+    val openExternal: (String) -> Unit = { url ->
+        runCatching {
+            context.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                },
+            )
+        }.onFailure {
+            scope.launch { snackbarHostState.showSnackbar("没有可打开此链接的应用") }
+        }
     }
 
     LaunchedEffect(state.message) {
@@ -92,37 +110,26 @@ fun GuideApp(viewModel: GuideViewModel) {
                 HomeScreen(
                     state = state,
                     onQueryChange = viewModel::setQuery,
-                    onReload = viewModel::reloadRecommendations,
-                    onWorkClick = openWork,
+                    onCategoryChange = viewModel::setCategory,
+                    onRefresh = viewModel::refresh,
+                    onResourceClick = { selectedResource = it },
                     onFavoriteClick = viewModel::toggleFavorite,
                 )
             }
             composable("favorites") {
                 FavoritesScreen(
                     state = state,
-                    onWorkClick = openWork,
+                    onResourceClick = { selectedResource = it },
                     onFavoriteClick = viewModel::toggleFavorite,
                 )
             }
             composable("settings") {
                 SettingsScreen(
                     state = state,
-                    onAddFeed = viewModel::addFeed,
-                    onRemoveFeed = viewModel::removeFeed,
-                )
-            }
-            composable("work") {
-                WorkDetailScreen(
-                    state = state,
-                    onBack = { navController.popBackStack() },
-                    onPlay = { episode ->
-                        val title = listOfNotNull(state.selectedWork?.title, episode.title)
-                            .joinToString(" · ")
-                        navController.navigate(
-                            "player/${encodeRouteValue(episode.url)}/${encodeRouteValue(title)}",
-                        )
-                    },
-                    onFavoriteClick = viewModel::toggleFavorite,
+                    onSaveFeedUrl = viewModel::saveFeedUrl,
+                    onRefresh = viewModel::refresh,
+                    onImportPlaylist = viewModel::importPlaylist,
+                    onPostMessage = viewModel::postMessage,
                 )
             }
             composable(
@@ -140,6 +147,25 @@ fun GuideApp(viewModel: GuideViewModel) {
             }
         }
     }
+
+    selectedResource?.let { resource ->
+        ResourceDetailSheet(
+            resource = resource,
+            isFavorite = resource.id in state.favorites,
+            onDismiss = { selectedResource = null },
+            onFavorite = { viewModel.toggleFavorite(resource.id) },
+            onOpen = {
+                selectedResource = null
+                if (resource.isDirectMedia) {
+                    navController.navigate(
+                        "player/${encodeRouteValue(resource.url)}/${encodeRouteValue(resource.title)}",
+                    )
+                } else {
+                    openExternal(resource.url)
+                }
+            },
+        )
+    }
 }
 
 private enum class NavigationDestination(
@@ -147,7 +173,7 @@ private enum class NavigationDestination(
     val label: String,
     val icon: androidx.compose.ui.graphics.vector.ImageVector,
 ) {
-    HOME("home", "影视", Icons.Rounded.Home),
+    HOME("home", "资源", Icons.Rounded.Home),
     FAVORITES("favorites", "收藏", Icons.Rounded.Favorite),
     SETTINGS("settings", "设置", Icons.Rounded.Settings),
 }

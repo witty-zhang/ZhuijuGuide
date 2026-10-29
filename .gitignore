@@ -7,5 +7,3 @@ captures/
 .externalNativeBuild/
 .cxx/
 app/build/
-.kotlin/
-.DS_Store

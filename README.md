@@ -1,56 +1,50 @@
 # 追剧指南
 
-Android 影视客户端：自带播放器 + 可插拔数据源，推荐、搜索、详情、播放全程在 APP 内完成，不跳第三方网站。
+一个面向 Android 的资源导航与播放客户端。首版使用 Kotlin、Jetpack Compose 和 Media3 构建。
 
-## 现在的样子
+## 已实现
 
-1. 打开 APP 是「推荐」海报墙，内容来自所有已接入的数据源
-2. 顶部搜索框跨所有数据源搜索，输入即搜（350ms 防抖）
-3. 点海报进详情页：海报、简介、以及可播放的地址列表
-4. 点播放 → Media3 原生播放器播放，不进入网页
-5. 海报右上角心形收藏，收藏页可回看
+- 内置合法示例资源与分类浏览
+- 搜索、分类筛选、收藏和详情面板
+- 自定义远程 JSON 数据源与本地缓存
+- 启动时自动刷新远程数据，并每 12 小时后台更新
+- 兼容 `resources`、`items`、`data`、`list` 等常见包装字段
+- 本地 M3U/M3U8 播放列表导入
+- HLS/MP4 等直接媒体地址播放
+- 浅色/深色主题
 
-## 订阅自己的源
+当前内置 40 个资源入口，包括国内官方平台、国际免费服务、公共领域馆藏、新闻直播、IPTV 索引工具和开源播放器。
 
-设置 → 订阅源，粘贴 RSS / 播客的 feed 地址即可：
+## 数据源格式
 
-- APP 会读取 feed 里 `<item>` 的 `<enclosure>`、`media:content` 等媒体地址
-- 解析标题、简介（自动去 HTML）、封面（`itunes:image` / `media:thumbnail`）、发布日期
-- 音频和视频都支持，详情页会标出「音频 / 视频」，点开就是原生播放
-- 订阅保存在本地，可随时在设置里移除；订阅内容和内置源一起出现在推荐和搜索里
-- feed 有 5 分钟内存缓存，单个 feed 上限 16 MB
+最小资源对象需要 `title` 和 `url`。应用也兼容 `name`、`link`、`homepage`、`description`、`status`、`risk`、`rating` 等常见字段。
 
-
-## 架构
-
+```json
+{
+  "resources": [
+    {
+      "id": "example",
+      "title": "示例资源",
+      "description": "资源说明",
+      "url": "https://example.com",
+      "category": "官方电视",
+      "status": "可访问",
+      "risk": "低",
+      "rating": 5,
+      "last_checked": "2026-10-28",
+      "tags": ["官方"]
+    }
+  ]
+}
 ```
-数据源（SourceProvider）
-   ├─ featured()  首页推荐
-   ├─ search()    统一搜索
-   └─ episodes()  取可播放地址
-        ↓
-   SourceRegistry（注册/聚合）
-        ↓
-   GuideViewModel（推荐、搜索、详情、收藏）
-        ↓
-   Compose UI（推荐页 / 详情页 / 播放器 / 收藏）
-```
-
-新增一个内容来源只需要：
-
-1. 实现 `SourceProvider` 接口（`app/src/main/java/com/lzzhang/zhuijuguide/data/sources/`）
-2. 在 `GuideViewModel.Factory` 里把实例加进 `SourceRegistry(listOf(...))`
-
-页面、搜索、播放、收藏都不需要改。
-
-## 内置示例源
-
-- **NASA 影像库**：公共领域的官方航天影像，使用 `images-api.nasa.gov` 搜索接口和 `images-assets.nasa.gov` 的 MP4 直链。
-- **RSS 订阅源**：用户在设置里添加的 feed，用 `RssFeedSource` 解析，不内置任何站点爬虫。
 
 ## 构建
 
-环境要求：JDK 17–21、Android SDK Platform 35、Build Tools 35.0.0。
+环境要求：
+
+- JDK 17 或 21（Gradle JVM 需为 17–22）
+- Android SDK Platform 35
+- Android Build Tools 35.0.0
 
 ```bash
 ./gradlew testDebugUnitTest
@@ -61,6 +55,9 @@ Android 影视客户端：自带播放器 + 可插拔数据源，推荐、搜索
 
 ## 边界
 
-- 应用只播放数据源返回的地址，不抓取、不解析、不代理第三方影视站内容。
-- 添加数据源前请确认你有权访问和使用该内容。
-- 站点导航与可用性检测（0.4.0 的版本）仍保留在代码里，当前版本未接入主流程。
+本项目只提供资源目录、状态展示和播放器能力，不提供影视文件。第三方资源需要单独判断合法性、隐私和安全性。发布前应补充隐私政策、投诉渠道、内容审核和资源来源说明。
+
+产品方向参考：
+
+- [laoma528/awesome-zhuiju-free](https://github.com/laoma528/awesome-zhuiju-free)，其目录内容采用 CC BY 4.0。
+- 第三方链接、商标、海报、影视内容和直播流不属于该项目许可证授权范围。

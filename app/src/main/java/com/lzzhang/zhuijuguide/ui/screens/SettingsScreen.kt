@@ -1,5 +1,7 @@
 package com.lzzhang.zhuijuguide.ui.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,40 +12,79 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.CloudSync
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Security
+import androidx.compose.material.icons.rounded.UploadFile
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lzzhang.zhuijuguide.BuildConfig
 import com.lzzhang.zhuijuguide.ui.GuideUiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.Reader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     state: GuideUiState,
-    onAddFeed: (String) -> Unit,
-    onRemoveFeed: (String) -> Unit,
+    onSaveFeedUrl: (String) -> Unit,
+    onRefresh: () -> Unit,
+    onImportPlaylist: (String) -> Unit,
+    onPostMessage: (String) -> Unit,
 ) {
-    var feedDraft by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var feedDraft by remember { mutableStateOf(state.feedUrl) }
+    var isReadingPlaylist by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.feedUrl) {
+        feedDraft = state.feedUrl
+    }
+
+    val playlistPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            isReadingPlaylist = true
+            runCatching {
+                withContext(Dispatchers.IO) {
+                    context.contentResolver.openInputStream(uri)
+                        ?.bufferedReader()
+                        ?.use { readBounded(it, MAX_PLAYLIST_CHARS) }
+                        ?: error("无法读取所选文件")
+                }
+            }.onSuccess { content ->
+                onImportPlaylist(content)
+            }.onFailure { error ->
+                onPostMessage(error.message ?: "播放列表读取失败")
+            }
+            isReadingPlaylist = false
+        }
+    }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("设置") }) },
@@ -57,90 +98,81 @@ fun SettingsScreen(
         ) {
             item {
                 SettingsSection(
-                    title = "订阅源",
-                    description = "粘贴 RSS / 播客的 feed 地址，APP 会读取其中的音视频并加入推荐和搜索。",
+                    title = "远程资源",
+                    description = "配置兼容 JSON 地址后，可在首页刷新资源目录。",
+                    icon = { Icon(Icons.Rounded.CloudSync, contentDescription = null) },
                 ) {
                     OutlinedTextField(
                         value = feedDraft,
                         onValueChange = { feedDraft = it },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Feed 地址") },
-                        placeholder = { Text("https://example.com/feed.xml") },
+                        label = { Text("JSON 数据源地址") },
+                        placeholder = { Text("https://example.com/resources.json") },
                         singleLine = true,
                         shape = MaterialTheme.shapes.medium,
                     )
-                    Button(
-                        onClick = {
-                            onAddFeed(feedDraft)
-                            feedDraft = ""
-                        },
-                        enabled = !state.isAddingFeed && feedDraft.isNotBlank(),
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(if (state.isAddingFeed) "正在读取订阅…" else "添加订阅")
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Button(
+                            onClick = { onSaveFeedUrl(feedDraft) },
+                            enabled = feedDraft.isNotBlank() && !state.isRefreshing,
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(Icons.Rounded.CloudSync, contentDescription = null)
+                            Text("保存地址", modifier = Modifier.padding(start = 8.dp))
+                        }
+                        FilledTonalButton(
+                            onClick = onRefresh,
+                            enabled = !state.isRefreshing,
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Text("立即刷新")
+                        }
                     }
                 }
             }
             item {
                 SettingsSection(
-                    title = "已接入的数据源",
-                    description = "每个数据源实现同一套接口，推荐、搜索、播放会自动聚合。",
+                    title = "本地播放列表",
+                    description = "导入你自行提供的 M3U 文件，频道只保存在当前设备。",
+                    icon = { Icon(Icons.Rounded.UploadFile, contentDescription = null) },
                 ) {
-                    state.sources.forEach { source ->
-                        val isUserFeed = source.id.startsWith("rss-")
-                        Surface(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = MaterialTheme.shapes.medium,
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 14.dp, top = 12.dp, end = 6.dp, bottom = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    verticalArrangement = Arrangement.spacedBy(3.dp),
-                                ) {
-                                    Text(
-                                        text = source.name,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.SemiBold,
-                                    )
-                                    Text(
-                                        text = source.tagline,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                                if (isUserFeed) {
-                                    IconButton(onClick = { onRemoveFeed(source.id) }) {
-                                        Icon(
-                                            imageVector = Icons.Rounded.DeleteOutline,
-                                            contentDescription = "移除订阅",
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        )
-                                    }
-                                }
+                    OutlinedButton(
+                        onClick = {
+                            runCatching {
+                                playlistPicker.launch(arrayOf("*/*"))
+                            }.onFailure {
+                                onPostMessage("无法打开文件选择器")
                             }
-                        }
+                        },
+                        enabled = !isReadingPlaylist,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Icon(Icons.Rounded.UploadFile, contentDescription = null)
+                        Text(
+                            text = if (isReadingPlaylist) "正在读取…" else "选择 M3U 文件",
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
                     }
                     Text(
-                        text = "新增来源只需要实现 SourceProvider 接口并注册，不需要改页面代码。",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.outline,
+                        text = "已导入 ${state.importedResources.size} 个频道",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
             item { HorizontalDivider() }
             item {
                 SettingsSection(
-                    title = "使用原则",
-                    icon = { Icon(Icons.Rounded.Security, contentDescription = null) },
+                    title = "自动刷新",
+                    description = "配置远程 JSON 后，App 每次启动会尝试刷新，并在后台每 12 小时更新一次。",
                 ) {
                     Text(
-                        text = "本应用自带播放器，只播放数据源提供的地址。请只添加你有权访问的内容源，并遵守当地法律与服务条款。",
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = if (state.feedUrl.isBlank()) {
+                            "尚未配置远程资源，自动刷新暂不执行。"
+                        } else {
+                            "已启用：${state.feedUrl}"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -162,7 +194,7 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        text = "内置示例源：NASA 影像库（公共领域）",
+                        text = "资源目录方向参考 Awesome Zhuiju Free（CC BY 4.0）",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -203,3 +235,17 @@ private fun SettingsSection(
         content()
     }
 }
+
+private fun readBounded(reader: Reader, maxChars: Int): String {
+    val buffer = CharArray(8 * 1024)
+    val output = StringBuilder()
+    while (true) {
+        val count = reader.read(buffer)
+        if (count < 0) break
+        check(output.length + count <= maxChars) { "播放列表文件超过 2 MB 限制" }
+        output.append(buffer, 0, count)
+    }
+    return output.toString()
+}
+
+private const val MAX_PLAYLIST_CHARS = 2_000_000
