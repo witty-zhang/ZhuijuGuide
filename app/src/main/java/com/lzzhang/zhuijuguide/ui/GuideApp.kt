@@ -37,6 +37,7 @@ import com.lzzhang.zhuijuguide.model.ResourceType
 import com.lzzhang.zhuijuguide.ui.components.ResourceDetailSheet
 import com.lzzhang.zhuijuguide.ui.screens.FavoritesScreen
 import com.lzzhang.zhuijuguide.ui.screens.HomeScreen
+import com.lzzhang.zhuijuguide.ui.screens.LiveChannelsScreen
 import com.lzzhang.zhuijuguide.ui.screens.PlayerScreen
 import com.lzzhang.zhuijuguide.ui.screens.SettingsScreen
 import com.lzzhang.zhuijuguide.ui.screens.WebScreen
@@ -135,6 +136,19 @@ fun GuideApp(viewModel: GuideViewModel) {
                     onPostMessage = viewModel::postMessage,
                 )
             }
+            composable("live") {
+                LiveChannelsScreen(
+                    state = state,
+                    onBack = { navController.popBackStack() },
+                    onReload = viewModel::reloadLiveSource,
+                    onQueryChange = viewModel::setLiveQuery,
+                    onChannelClick = { channel ->
+                        navController.navigate(
+                            "player/${encodeRouteValue(channel.url)}/${encodeRouteValue(channel.title)}",
+                        )
+                    },
+                )
+            }
             composable(
                 route = "web/{url}/{title}",
                 arguments = listOf(
@@ -173,6 +187,10 @@ fun GuideApp(viewModel: GuideViewModel) {
             onOpen = {
                 selectedResourceId = null
                 when {
+                    resource.type == ResourceType.PLAYLIST -> {
+                        viewModel.openLiveSource(resource)
+                        navController.navigate("live")
+                    }
                     resource.isDirectMedia -> navController.navigate(
                         "player/${encodeRouteValue(resource.url)}/${encodeRouteValue(resource.title)}",
                     )

@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "updated_at": "2026-10-29",
+  "source": "用户提供的直播源地址",
+  "resources": [
+    {
+      "id": "live-vma",
+      "title": "VMA 直播源",
+      "description": "TXT 频道清单，含央视、卫视、地方台、体育和电影频道，点开后在应用内加载",
+      "url": "https://pan.vma.cc/down.php/f83b92a24d61858666f13c5db938a292.txt",
+      "category": "直播源",
+      "type": "playlist",
+      "status": "可访问",
+      "rating": 5,
+      "last_checked": "2026-10-29",
+      "tags": [
+        "直播源",
+        "TXT"
+      ]
+    },
+    {
+      "id": "live-fantaiying",
+      "title": "饭太硬",
+      "description": "/tv 会跳回站点首页，属于导航站，在应用内网页里查看其中的线路",
+      "url": "http://www.饭太硬.cc/tv",
+      "category": "直播源",
+      "type": "web",
+      "status": "可访问",
+      "rating": 5,
+      "last_checked": "2026-10-29",
+      "tags": [
+        "直播源",
+        "导航站"
+      ]
+    },
+    {
+      "id": "live-feimao",
+      "title": "肥猫",
+      "description": "TVBox 配置（spider 接口），点开会是空白页，要在 TVBox 客户端里导入这个地址",
+      "url": "http://肥猫.net/tv",
+      "category": "直播源",
+      "type": "web",
+      "status": "可访问",
+      "rating": 5,
+      "last_checked": "2026-10-29",
+      "tags": [
+        "直播源",
+        "TVBox"
+      ]
+    }
+  ]
+}

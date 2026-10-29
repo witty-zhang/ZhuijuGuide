@@ -42,7 +42,7 @@ class AvailabilityChecker(context: Context) {
             return Availability.UNKNOWN
         }
         val connection = runCatching {
-            (URL(address).openConnection() as HttpURLConnection)
+            (URL(UrlNormalizer.toAscii(address)).openConnection() as HttpURLConnection)
         }.getOrNull() ?: return Availability.OFFLINE
 
         return try {

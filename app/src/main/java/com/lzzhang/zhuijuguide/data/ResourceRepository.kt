@@ -3,6 +3,7 @@ package com.lzzhang.zhuijuguide.data
 import android.content.Context
 import com.lzzhang.zhuijuguide.model.Availability
 import com.lzzhang.zhuijuguide.model.MediaResource
+import com.lzzhang.zhuijuguide.model.ResourceCategory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -11,6 +12,8 @@ class ResourceRepository(
     private val context: Context,
     private val parser: ResourceJsonParser = ResourceJsonParser(),
     private val m3uParser: M3uParser = M3uParser(),
+    private val livePlaylistParser: LivePlaylistParser = LivePlaylistParser(m3uParser),
+    private val liveClient: LiveSourceClient = LiveSourceClient(context, livePlaylistParser),
 ) {
     private val playlistFile = File(context.filesDir, "imported_playlist.m3u")
 
@@ -34,6 +37,37 @@ class ResourceRepository(
     suspend fun loadImportedPlaylist(): List<MediaResource> = withContext(Dispatchers.IO) {
         if (!playlistFile.isFile) return@withContext emptyList()
         runCatching { m3uParser.toResources(playlistFile.readText()) }.getOrDefault(emptyList())
+    }
+
+    /** 内置的直播源订阅地址，地址里的状态同样以本机检测为准。 */
+    suspend fun loadLiveSources(): List<MediaResource> = withContext(Dispatchers.IO) {
+        val text = context.assets.open("starter_live_sources.json")
+            .bufferedReader()
+            .use { it.readText() }
+        parser.parse(text).map { resource ->
+            resource.copy(
+                category = ResourceCategory.LIVE,
+                availability = Availability.UNKNOWN,
+                lastChecked = null,
+                sourceLabel = "直播源订阅地址",
+            )
+        }
+    }
+
+    /** 下载一个直播源并展开成频道；TXT 与 M3U 两种写法都支持。 */
+    suspend fun fetchLiveChannels(source: MediaResource): List<MediaResource> = withContext(Dispatchers.IO) {
+        val content = liveClient.download(source.url)
+        val entries = livePlaylistParser.parse(content)
+        check(entries.isNotEmpty()) {
+            "没有从这份直播源里读出频道，可能它不是 TXT / M3U 频道列表"
+        }
+        m3uParser.toResources(
+            entries = entries,
+            category = ResourceCategory.LIVE,
+            baseTags = listOf("直播源"),
+            sourceLabel = source.title,
+            isImported = false,
+        )
     }
 
     /**

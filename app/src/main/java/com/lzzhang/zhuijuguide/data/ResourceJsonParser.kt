@@ -87,7 +87,7 @@ class ResourceJsonParser(
             description = description.ifBlank { "暂无简介" },
             url = url,
             category = primaryCategory,
-            type = inferType(url, primaryCategory, searchable),
+            type = parseType(item.string("type")) ?: inferType(url, primaryCategory, searchable),
             availability = parseAvailability(rawStatus),
             riskLevel = parseRisk(rawRisk),
             rating = rating,
@@ -95,6 +95,18 @@ class ResourceJsonParser(
             tags = tags,
             sourceLabel = item.string("sourceLabel", "source") ?: "远程资源",
         )
+    }
+
+    /** 目录里可以显式写 type，比如直播源的 .txt 清单要当成播放列表而不是网页。 */
+    private fun parseType(value: String?): ResourceType? {
+        return when (value?.trim()?.lowercase()) {
+            "web", "网页" -> ResourceType.WEB
+            "app", "应用" -> ResourceType.APP
+            "playlist", "m3u", "m3u8", "播放列表" -> ResourceType.PLAYLIST
+            "video", "视频", "media" -> ResourceType.VIDEO
+            "open_source", "open-source", "github", "开源" -> ResourceType.OPEN_SOURCE
+            else -> null
+        }
     }
 
     private fun inferType(url: String, category: String, searchable: String): ResourceType {

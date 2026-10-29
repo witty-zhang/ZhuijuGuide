@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 data class GuideUiState(
     val resources: List<MediaResource> = emptyList(),
+    val liveSources: List<MediaResource> = emptyList(),
     val importedResources: List<MediaResource> = emptyList(),
     val favorites: Set<String> = emptySet(),
     val query: String = "",
@@ -34,16 +35,22 @@ data class GuideUiState(
     val checkTotal: Int = 0,
     val lastCheckedAt: Long? = null,
     val message: String? = null,
+    val liveSource: MediaResource? = null,
+    val liveChannels: List<MediaResource> = emptyList(),
+    val liveQuery: String = "",
+    val isLiveLoading: Boolean = false,
+    val liveError: String? = null,
 ) {
-    /** 固定三个分类，不再按数据里的分组自动长出新的 tab。 */
+    /** 固定四个分类，不再按数据里的分组自动长出新的 tab。 */
     val categories: List<String> = ResourceCategory.tabs
 
     val allResources: List<MediaResource>
-        get() = (importedResources + resources).distinctBy { it.id }
+        get() = (importedResources + resources + liveSources).distinctBy { it.id }
 
     val currentResources: List<MediaResource>
         get() = when (category) {
             ResourceCategory.LOCAL -> importedResources
+            ResourceCategory.LIVE -> liveSources
             ResourceCategory.ONLINE -> resources
             else -> allResources
         }
@@ -63,6 +70,17 @@ data class GuideUiState(
                 .sortedBy { it.availability.sortRank }
         }
 
+    /** 直播源里搜出来的频道，量级上千，按名称和分组过滤。 */
+    val visibleLiveChannels: List<MediaResource>
+        get() {
+            val needle = liveQuery.trim()
+            if (needle.isBlank()) return liveChannels
+            return liveChannels.filter { channel ->
+                channel.title.contains(needle, ignoreCase = true) ||
+                    channel.tags.any { it.contains(needle, ignoreCase = true) }
+            }
+        }
+
     val favoriteResources: List<MediaResource>
         get() = allResources.filter { it.id in favorites }
 
@@ -70,13 +88,14 @@ data class GuideUiState(
     val statusSummary: String
         get() = currentResources.summary()
 
-    /** 两个 tab 加起来的统计，设置页用。 */
+    /** 各个 tab 加起来的统计，设置页用。 */
     val totalStatusSummary: String
         get() = allResources.summary()
 
     val headerSummary: String
         get() = when (category) {
             ResourceCategory.LOCAL -> "已导入 ${importedResources.size} 个频道"
+            ResourceCategory.LIVE -> "${liveSources.size} 个直播源 · $statusSummary"
             ResourceCategory.ONLINE -> "${resources.size} 个资源 · $statusSummary"
             else -> "${allResources.size} 个资源 · $statusSummary"
         }
@@ -99,10 +118,12 @@ class GuideViewModel(
             val records = availabilityStore.read()
             val resources = repository.loadResources().applyRecords(records)
             val imported = repository.loadImportedPlaylist().applyRecords(records)
+            val liveSources = repository.loadLiveSources().applyRecords(records)
             _uiState.update {
                 it.copy(
                     resources = resources,
                     importedResources = imported,
+                    liveSources = liveSources,
                     isLoading = false,
                     lastCheckedAt = records.values.maxOfOrNull(AvailabilityRecord::checkedAt),
                 )
@@ -140,6 +161,7 @@ class GuideViewModel(
                     state.copy(
                         resources = state.resources.applyAvailability(id, availability),
                         importedResources = state.importedResources.applyAvailability(id, availability),
+                        liveSources = state.liveSources.applyAvailability(id, availability),
                         checkedCount = state.checkedCount + 1,
                     )
                 }
@@ -178,6 +200,47 @@ class GuideViewModel(
                     }
                 }
         }
+    }
+
+    /**
+     * 打开一个直播源：把清单下载下来展开成频道。频道只放在内存里，
+     * 不重复检测，也不写进收藏。
+     */
+    fun openLiveSource(source: MediaResource) {
+        if (_uiState.value.isLiveLoading) return
+        _uiState.update {
+            it.copy(
+                liveSource = source,
+                liveChannels = emptyList(),
+                liveQuery = "",
+                isLiveLoading = true,
+                liveError = null,
+            )
+        }
+        viewModelScope.launch {
+            runCatching { repository.fetchLiveChannels(source) }
+                .onSuccess { channels ->
+                    _uiState.update {
+                        it.copy(liveChannels = channels, isLiveLoading = false)
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLiveLoading = false,
+                            liveError = error.message ?: "直播源加载失败",
+                        )
+                    }
+                }
+        }
+    }
+
+    fun reloadLiveSource() {
+        _uiState.value.liveSource?.let(::openLiveSource)
+    }
+
+    fun setLiveQuery(value: String) {
+        _uiState.update { it.copy(liveQuery = value) }
     }
 
     fun toggleFavorite(resourceId: String) {

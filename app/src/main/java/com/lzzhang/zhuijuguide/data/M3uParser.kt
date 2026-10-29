@@ -39,27 +39,41 @@ class M3uParser {
         return entries.distinctBy { it.url }
     }
 
-    fun toResources(content: String): List<MediaResource> {
-        return parse(content).map { entry ->
+    fun toResources(
+        content: String,
+        category: String = ResourceCategory.LOCAL,
+        baseTags: List<String> = DEFAULT_TAGS,
+        sourceLabel: String = "本地播放列表",
+        isImported: Boolean = true,
+    ): List<MediaResource> = toResources(parse(content), category, baseTags, sourceLabel, isImported)
+
+    fun toResources(
+        entries: List<PlaylistEntry>,
+        category: String = ResourceCategory.LOCAL,
+        baseTags: List<String> = DEFAULT_TAGS,
+        sourceLabel: String = "本地播放列表",
+        isImported: Boolean = true,
+    ): List<MediaResource> {
+        return entries.map { entry ->
             MediaResource(
                 id = "playlist_${entry.url.hashCode().toUInt().toString(16)}",
                 title = entry.title,
-                description = "来自本地播放列表的直播频道",
+                description = entry.group?.takeIf(String::isNotBlank)
+                    ?.let { "分组：$it" }
+                    ?: "来自${sourceLabel}的频道",
                 url = entry.url,
-                // 首页只保留固定的两个分类，本地导入的频道统一归到「M3U / M3U8」
-                category = ResourceCategory.LOCAL,
+                category = category,
                 type = ResourceType.VIDEO,
                 availability = Availability.UNKNOWN,
                 riskLevel = RiskLevel.UNKNOWN,
                 rating = null,
                 lastChecked = null,
                 tags = buildList {
-                    add("M3U8")
-                    add("本地导入")
+                    addAll(baseTags)
                     entry.group?.takeIf(String::isNotBlank)?.let(::add)
                 },
-                sourceLabel = "本地播放列表",
-                isImported = true,
+                sourceLabel = sourceLabel,
+                isImported = isImported,
             )
         }
     }
@@ -111,5 +125,6 @@ class M3uParser {
 
     private companion object {
         val ATTRIBUTE_REGEX = Regex("""([\w-]+)\s*=\s*"([^"]*)"""")
+        val DEFAULT_TAGS = listOf("M3U8", "本地导入")
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.PlaylistPlay
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -140,11 +141,16 @@ fun ResourceDetailSheet(
                     modifier = Modifier.weight(1f),
                 ) {
                     Icon(
-                        imageVector = if (resource.isDirectMedia) Icons.Rounded.PlayArrow else Icons.Rounded.OpenInNew,
+                        imageVector = when {
+                            resource.type == ResourceType.PLAYLIST -> Icons.Rounded.PlaylistPlay
+                            resource.isDirectMedia -> Icons.Rounded.PlayArrow
+                            else -> Icons.Rounded.OpenInNew
+                        },
                         contentDescription = null,
                     )
                     Text(
                         text = when {
+                            resource.type == ResourceType.PLAYLIST -> "加载频道"
                             resource.isDirectMedia -> "播放"
                             resource.type == ResourceType.WEB -> "在应用内打开"
                             else -> "打开资源"
