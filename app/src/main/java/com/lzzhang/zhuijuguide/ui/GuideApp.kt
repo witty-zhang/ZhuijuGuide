@@ -33,12 +33,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.lzzhang.zhuijuguide.model.MediaResource
+import com.lzzhang.zhuijuguide.model.ResourceType
 import com.lzzhang.zhuijuguide.ui.components.ResourceDetailSheet
 import com.lzzhang.zhuijuguide.ui.screens.FavoritesScreen
 import com.lzzhang.zhuijuguide.ui.screens.HomeScreen
 import com.lzzhang.zhuijuguide.ui.screens.PlayerScreen
 import com.lzzhang.zhuijuguide.ui.screens.SettingsScreen
+import com.lzzhang.zhuijuguide.ui.screens.WebScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -50,7 +51,10 @@ fun GuideApp(viewModel: GuideViewModel) {
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var selectedResource by remember { mutableStateOf<MediaResource?>(null) }
+    var selectedResourceId by remember { mutableStateOf<String?>(null) }
+    val selectedResource = selectedResourceId?.let { id ->
+        state.allResources.firstOrNull { it.id == id }
+    }
 
     val openExternal: (String) -> Unit = { url ->
         runCatching {
@@ -111,25 +115,37 @@ fun GuideApp(viewModel: GuideViewModel) {
                     state = state,
                     onQueryChange = viewModel::setQuery,
                     onCategoryChange = viewModel::setCategory,
-                    onRefresh = viewModel::refresh,
-                    onResourceClick = { selectedResource = it },
+                    onCheck = { viewModel.checkAvailability(announce = true) },
+                    onResourceClick = { selectedResourceId = it.id },
                     onFavoriteClick = viewModel::toggleFavorite,
                 )
             }
             composable("favorites") {
                 FavoritesScreen(
                     state = state,
-                    onResourceClick = { selectedResource = it },
+                    onResourceClick = { selectedResourceId = it.id },
                     onFavoriteClick = viewModel::toggleFavorite,
                 )
             }
             composable("settings") {
                 SettingsScreen(
                     state = state,
-                    onSaveFeedUrl = viewModel::saveFeedUrl,
-                    onRefresh = viewModel::refresh,
+                    onCheck = { viewModel.checkAvailability(announce = true) },
                     onImportPlaylist = viewModel::importPlaylist,
                     onPostMessage = viewModel::postMessage,
+                )
+            }
+            composable(
+                route = "web/{url}/{title}",
+                arguments = listOf(
+                    navArgument("url") { type = NavType.StringType },
+                    navArgument("title") { type = NavType.StringType },
+                ),
+            ) { entry ->
+                WebScreen(
+                    title = decodeRouteValue(entry.arguments?.getString("title").orEmpty()),
+                    url = decodeRouteValue(entry.arguments?.getString("url").orEmpty()),
+                    onBack = { navController.popBackStack() },
                 )
             }
             composable(
@@ -152,16 +168,18 @@ fun GuideApp(viewModel: GuideViewModel) {
         ResourceDetailSheet(
             resource = resource,
             isFavorite = resource.id in state.favorites,
-            onDismiss = { selectedResource = null },
+            onDismiss = { selectedResourceId = null },
             onFavorite = { viewModel.toggleFavorite(resource.id) },
             onOpen = {
-                selectedResource = null
-                if (resource.isDirectMedia) {
-                    navController.navigate(
+                selectedResourceId = null
+                when {
+                    resource.isDirectMedia -> navController.navigate(
                         "player/${encodeRouteValue(resource.url)}/${encodeRouteValue(resource.title)}",
                     )
-                } else {
-                    openExternal(resource.url)
+                    resource.type == ResourceType.WEB -> navController.navigate(
+                        "web/${encodeRouteValue(resource.url)}/${encodeRouteValue(resource.title)}",
+                    )
+                    else -> openExternal(resource.url)
                 }
             },
         )

@@ -126,7 +126,7 @@ fun ResourceDetailSheet(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    text = "最后检测：${resource.lastChecked ?: "未提供"}",
+                    text = "最后检测：${resource.lastChecked ?: "尚未检测"}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -144,7 +144,11 @@ fun ResourceDetailSheet(
                         contentDescription = null,
                     )
                     Text(
-                        text = if (resource.isDirectMedia) "播放" else "打开资源",
+                        text = when {
+                            resource.isDirectMedia -> "播放"
+                            resource.type == ResourceType.WEB -> "在应用内打开"
+                            else -> "打开资源"
+                        },
                         modifier = Modifier.padding(start = 8.dp),
                     )
                 }

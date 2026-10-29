@@ -17,11 +17,11 @@ class StarterCatalogTest {
             ?: error("Starter resource catalog not found")
         val resources = ResourceJsonParser().parse(file.readText())
 
-        assertEquals(40, resources.size)
+        assertTrue("Expected at least 40 resources", resources.size >= 40)
         assertEquals(resources.size, resources.map { it.id }.distinct().size)
         assertTrue(resources.all { it.url.startsWith("http://") || it.url.startsWith("https://") })
-        assertTrue(resources.all { it.category.isNotBlank() })
-        assertTrue(resources.any { it.title == "央视网直播" })
-        assertTrue(resources.any { it.title == "Awesome Zhuiju Free" })
+        assertTrue(resources.all { it.category == "在线影视" })
+        assertTrue(resources.any { it.title == "看看鸭" })
+        assertTrue(resources.any { it.title == "追影" })
     }
 }

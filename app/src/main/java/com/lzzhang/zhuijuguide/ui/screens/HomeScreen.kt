@@ -19,6 +19,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -40,7 +41,7 @@ fun HomeScreen(
     state: GuideUiState,
     onQueryChange: (String) -> Unit,
     onCategoryChange: (String) -> Unit,
-    onRefresh: () -> Unit,
+    onCheck: () -> Unit,
     onResourceClick: (com.lzzhang.zhuijuguide.model.MediaResource) -> Unit,
     onFavoriteClick: (String) -> Unit,
 ) {
@@ -51,7 +52,11 @@ fun HomeScreen(
                     Column {
                         Text("追剧指南")
                         Text(
-                            text = "${state.allResources.size} 个资源 · 状态由数据源提供",
+                            text = if (state.isChecking) {
+                                "本机检测中 ${state.checkedCount}/${state.checkTotal}"
+                            } else {
+                                "${state.allResources.size} 个资源 · ${state.statusSummary}"
+                            },
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
@@ -60,7 +65,7 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    if (state.isRefreshing) {
+                    if (state.isChecking) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .padding(horizontal = 18.dp)
@@ -68,8 +73,8 @@ fun HomeScreen(
                             strokeWidth = 2.dp,
                         )
                     } else {
-                        IconButton(onClick = onRefresh) {
-                            Icon(Icons.Rounded.Refresh, contentDescription = "刷新数据源")
+                        IconButton(onClick = onCheck) {
+                            Icon(Icons.Rounded.Refresh, contentDescription = "重新检测可用性")
                         }
                     }
                 },
@@ -83,6 +88,20 @@ fun HomeScreen(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+            if (state.isChecking) {
+                item {
+                    LinearProgressIndicator(
+                        progress = {
+                            if (state.checkTotal == 0) {
+                                0f
+                            } else {
+                                state.checkedCount.toFloat() / state.checkTotal
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
             item {
                 OutlinedTextField(
                     value = state.query,
