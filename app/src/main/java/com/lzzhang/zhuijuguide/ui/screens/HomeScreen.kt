@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.lzzhang.zhuijuguide.model.ResourceCategory
 import com.lzzhang.zhuijuguide.ui.GuideUiState
 import com.lzzhang.zhuijuguide.ui.components.CategoryBar
 import com.lzzhang.zhuijuguide.ui.components.ResourceListItem
@@ -55,7 +56,7 @@ fun HomeScreen(
                             text = if (state.isChecking) {
                                 "本机检测中 ${state.checkedCount}/${state.checkTotal}"
                             } else {
-                                "${state.allResources.size} 个资源 · ${state.statusSummary}"
+                                state.headerSummary
                             },
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -145,7 +146,14 @@ fun HomeScreen(
 
                 state.visibleResources.isEmpty() -> {
                     item {
-                        EmptySearch("没有匹配的资源", "换个关键词或分类再试一次")
+                        if (state.query.isBlank() &&
+                            state.category == ResourceCategory.LOCAL &&
+                            state.importedResources.isEmpty()
+                        ) {
+                            EmptySearch("还没有导入播放列表", "在「设置 → 本地播放列表」里选择 M3U / M3U8 文件")
+                        } else {
+                            EmptySearch("没有匹配的资源", "换个关键词再试一次")
+                        }
                     }
                 }
 

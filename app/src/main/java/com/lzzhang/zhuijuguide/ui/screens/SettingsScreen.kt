@@ -89,7 +89,7 @@ fun SettingsScreen(
             item {
                 SettingsSection(
                     title = "可用性检测",
-                    description = "状态由 APP 在本机发起请求测出：200–399 判为可用，401/403/429/451 判为受限，其余判为失效。",
+                    description = "打开 APP 不会自动检测；点首页右上角刷新，或下面的按钮才发起。200–399 判为可用，401/403/429/451 判为受限，其余判为失效。",
                     icon = { Icon(Icons.Rounded.NetworkCheck, contentDescription = null) },
                 ) {
                     Text(
@@ -98,7 +98,7 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        text = state.statusSummary,
+                        text = state.totalStatusSummary,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -121,7 +121,7 @@ fun SettingsScreen(
             item {
                 SettingsSection(
                     title = "本地播放列表",
-                    description = "导入你自行提供的 M3U 文件，频道只保存在当前设备。",
+                    description = "导入自行提供的 M3U / M3U8 频道列表；频道只保存在当前设备。",
                     icon = { Icon(Icons.Rounded.UploadFile, contentDescription = null) },
                 ) {
                     OutlinedButton(
@@ -137,7 +137,7 @@ fun SettingsScreen(
                     ) {
                         Icon(Icons.Rounded.UploadFile, contentDescription = null)
                         Text(
-                            text = if (isReadingPlaylist) "正在读取…" else "选择 M3U 文件",
+                            text = if (isReadingPlaylist) "正在读取…" else "选择 M3U / M3U8 文件",
                             modifier = Modifier.padding(start = 8.dp),
                         )
                     }

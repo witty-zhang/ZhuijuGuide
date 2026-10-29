@@ -35,6 +35,12 @@ class AvailabilityChecker(context: Context) {
     }
 
     private fun check(address: String): Availability {
+        // 本地文件（比如导入的 m3u8 清单）没有 HTTP 状态码可测，保持待检测
+        if (!address.startsWith("http://", ignoreCase = true) &&
+            !address.startsWith("https://", ignoreCase = true)
+        ) {
+            return Availability.UNKNOWN
+        }
         val connection = runCatching {
             (URL(address).openConnection() as HttpURLConnection)
         }.getOrNull() ?: return Availability.OFFLINE

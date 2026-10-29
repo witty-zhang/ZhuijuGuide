@@ -11,6 +11,7 @@ import com.lzzhang.zhuijuguide.data.GuidePreferences
 import com.lzzhang.zhuijuguide.data.ResourceRepository
 import com.lzzhang.zhuijuguide.model.Availability
 import com.lzzhang.zhuijuguide.model.MediaResource
+import com.lzzhang.zhuijuguide.model.ResourceCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +27,7 @@ data class GuideUiState(
     val importedResources: List<MediaResource> = emptyList(),
     val favorites: Set<String> = emptySet(),
     val query: String = "",
-    val category: String = ALL_CATEGORIES,
+    val category: String = ResourceCategory.ALL,
     val isLoading: Boolean = true,
     val isChecking: Boolean = false,
     val checkedCount: Int = 0,
@@ -34,30 +35,29 @@ data class GuideUiState(
     val lastCheckedAt: Long? = null,
     val message: String? = null,
 ) {
+    /** 固定三个分类，不再按数据里的分组自动长出新的 tab。 */
+    val categories: List<String> = ResourceCategory.tabs
+
     val allResources: List<MediaResource>
         get() = (importedResources + resources).distinctBy { it.id }
 
-    val categories: List<String>
-        get() = buildList {
-            add(ALL_CATEGORIES)
-            addAll(allResources.map(MediaResource::category).distinct().sorted())
-            if (MY_LIVE_CATEGORY !in this) add(MY_LIVE_CATEGORY)
+    val currentResources: List<MediaResource>
+        get() = when (category) {
+            ResourceCategory.LOCAL -> importedResources
+            ResourceCategory.ONLINE -> resources
+            else -> allResources
         }
 
     val visibleResources: List<MediaResource>
         get() {
             val needle = query.trim()
-            return allResources
+            return currentResources
                 .filter { resource ->
-                    val matchesCategory = category == ALL_CATEGORIES ||
-                        resource.category == category ||
-                        (category == MY_LIVE_CATEGORY && resource.isImported)
-                    val matchesSearch = needle.isBlank() ||
+                    needle.isBlank() ||
                         resource.title.contains(needle, ignoreCase = true) ||
                         resource.description.contains(needle, ignoreCase = true) ||
                         resource.category.contains(needle, ignoreCase = true) ||
                         resource.tags.any { it.contains(needle, ignoreCase = true) }
-                    matchesCategory && matchesSearch
                 }
                 // 可用的排在前面，失效的沉底；同一状态内保持目录原顺序
                 .sortedBy { it.availability.sortRank }
@@ -66,22 +66,23 @@ data class GuideUiState(
     val favoriteResources: List<MediaResource>
         get() = allResources.filter { it.id in favorites }
 
-    fun countOf(availability: Availability): Int =
-        allResources.count { it.availability == availability }
-
+    /** 当前 tab 的统计，首页标题栏用。 */
     val statusSummary: String
-        get() = "可用 ${countOf(Availability.AVAILABLE)} · " +
-            "受限 ${countOf(Availability.RESTRICTED)} · " +
-            "失效 ${countOf(Availability.OFFLINE)} · " +
-            "待检测 ${countOf(Availability.UNKNOWN)}"
+        get() = currentResources.summary()
+
+    /** 两个 tab 加起来的统计，设置页用。 */
+    val totalStatusSummary: String
+        get() = allResources.summary()
+
+    val headerSummary: String
+        get() = when (category) {
+            ResourceCategory.LOCAL -> "已导入 ${importedResources.size} 个频道"
+            ResourceCategory.ONLINE -> "${resources.size} 个资源 · $statusSummary"
+            else -> "${allResources.size} 个资源 · $statusSummary"
+        }
 
     val lastCheckedText: String
         get() = lastCheckedAt?.let(::formatTimestamp) ?: "尚未检测"
-
-    companion object {
-        const val ALL_CATEGORIES = "全部"
-        const val MY_LIVE_CATEGORY = "我的直播"
-    }
 }
 
 class GuideViewModel(
@@ -106,7 +107,6 @@ class GuideViewModel(
                     lastCheckedAt = records.values.maxOfOrNull(AvailabilityRecord::checkedAt),
                 )
             }
-            checkAvailability()
         }
     }
 
@@ -167,11 +167,10 @@ class GuideViewModel(
                     _uiState.update {
                         it.copy(
                             importedResources = withStatus,
-                            category = GuideUiState.MY_LIVE_CATEGORY,
+                            category = ResourceCategory.LOCAL,
                             message = "已导入 ${imported.size} 个频道",
                         )
                     }
-                    checkAvailability()
                 }
                 .onFailure { error ->
                     _uiState.update {
@@ -235,6 +234,14 @@ private fun List<MediaResource>.applyAvailability(
     } else {
         resource
     }
+}
+
+private fun List<MediaResource>.summary(): String {
+    fun statusCount(availability: Availability) = count { it.availability == availability }
+    return "可用 ${statusCount(Availability.AVAILABLE)} · " +
+        "受限 ${statusCount(Availability.RESTRICTED)} · " +
+        "失效 ${statusCount(Availability.OFFLINE)} · " +
+        "待检测 ${statusCount(Availability.UNKNOWN)}"
 }
 
 private fun formatTimestamp(millis: Long): String {

@@ -55,3 +55,12 @@ data class PlaylistEntry(
     val group: String? = null,
     val logoUrl: String? = null,
 )
+
+/** 首页固定的三个分类：全部、内置在线影视目录、本地导入的 M3U / M3U8。 */
+object ResourceCategory {
+    const val ALL = "全部"
+    const val ONLINE = "在线影视"
+    const val LOCAL = "M3U / M3U8"
+
+    val tabs = listOf(ALL, ONLINE, LOCAL)
+}

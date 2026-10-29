@@ -2,6 +2,7 @@ package com.lzzhang.zhuijuguide.data
 
 import com.lzzhang.zhuijuguide.model.MediaResource
 import com.lzzhang.zhuijuguide.model.PlaylistEntry
+import com.lzzhang.zhuijuguide.model.ResourceCategory
 import com.lzzhang.zhuijuguide.model.ResourceType
 import com.lzzhang.zhuijuguide.model.Availability
 import com.lzzhang.zhuijuguide.model.RiskLevel
@@ -45,13 +46,18 @@ class M3uParser {
                 title = entry.title,
                 description = "来自本地播放列表的直播频道",
                 url = entry.url,
-                category = entry.group?.ifBlank { "我的直播" } ?: "我的直播",
+                // 首页只保留固定的两个分类，本地导入的频道统一归到「M3U / M3U8」
+                category = ResourceCategory.LOCAL,
                 type = ResourceType.VIDEO,
                 availability = Availability.UNKNOWN,
                 riskLevel = RiskLevel.UNKNOWN,
                 rating = null,
                 lastChecked = null,
-                tags = listOf("M3U", "本地导入"),
+                tags = buildList {
+                    add("M3U8")
+                    add("本地导入")
+                    entry.group?.takeIf(String::isNotBlank)?.let(::add)
+                },
                 sourceLabel = "本地播放列表",
                 isImported = true,
             )
@@ -59,8 +65,7 @@ class M3uParser {
     }
 
     private fun parseExtInf(line: String, extendedGroup: String?): PlaylistEntry {
-        val metadata = line.substringBefore(',', "")
-        val title = line.substringAfter(',', "").trim()
+        val (metadata, title) = splitMetadataAndTitle(line)
         val attributes = ATTRIBUTE_REGEX.findAll(metadata)
             .associate { match ->
                 match.groupValues[1].lowercase() to match.groupValues[2]
@@ -71,6 +76,32 @@ class M3uParser {
             group = attributes["group-title"].orEmpty().ifBlank { extendedGroup } ?: extendedGroup,
             logoUrl = attributes["tvg-logo"],
         )
+    }
+
+    /**
+     * #EXTINF 的时长和属性在前，频道名在后，分隔用的是第一个引号外的逗号。
+     * 属性值里也可能带逗号（比如 group-title="电影, 电视剧"），不能直接 substringBefore。
+     */
+    private fun splitMetadataAndTitle(line: String): Pair<String, String> {
+        var inQuotes = false
+        line.forEachIndexed { index, char ->
+            when {
+                char == '"' -> inQuotes = !inQuotes
+                char == ',' && !inQuotes ->
+                    return line.substring(0, index) to line.substring(index + 1).trim()
+            }
+        }
+        return line to ""
+    }
+
+    /** 整个文件就是一路 HLS 清单（#EXT-X- 系列标签），不是频道列表。 */
+    fun isHlsManifest(content: String): Boolean {
+        val lines = content.lineSequence()
+            .map { it.trim().removePrefix("\uFEFF") }
+            .filter(String::isNotBlank)
+            .toList()
+        return lines.any { it.startsWith("#EXTM3U", ignoreCase = true) } &&
+            lines.any { it.startsWith("#EXT-X-", ignoreCase = true) }
     }
 
     private fun isHttpUrl(value: String): Boolean {

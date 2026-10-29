@@ -36,9 +36,19 @@ class ResourceRepository(
         runCatching { m3uParser.toResources(playlistFile.readText()) }.getOrDefault(emptyList())
     }
 
+    /**
+     * 支持 .m3u 和 .m3u8 两种后缀：只要文件里是「频道名 + 流地址」的列表就能导入。
+     * 整份文件就是一路 HLS 清单（分片是相对路径）时，本机没有对应的分片文件，直接说明原因。
+     */
     suspend fun importPlaylist(content: String): List<MediaResource> = withContext(Dispatchers.IO) {
         val resources = m3uParser.toResources(content)
-        check(resources.isNotEmpty()) { "未在文件中发现有效的 M3U 频道" }
+        check(resources.isNotEmpty()) {
+            if (m3uParser.isHlsManifest(content)) {
+                "这是单路 HLS 清单，不是频道列表；它的分片路径是相对的，在本机无法直接播放"
+            } else {
+                "未在文件中发现有效的频道地址"
+            }
+        }
         playlistFile.writeText(content)
         resources
     }
