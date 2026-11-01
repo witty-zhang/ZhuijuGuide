@@ -3,11 +3,15 @@ package com.lzzhang.zhuijuguide.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
 
 private val LightColors = lightColorScheme(
@@ -58,13 +62,47 @@ private val AppShapes = Shapes(
     extraLarge = RoundedCornerShape(8.dp),
 )
 
+/**
+ * 电视端字号整体上调。
+ *
+ * 电视是 3 米观看距离，手机上的 12sp 在电视上根本看不清，
+ * 通常 10 尺界面的正文要 16sp 起步、标题 24sp 以上。
+ */
+private val BaseTypography = Typography()
+
+private fun TextStyle.tv(fontSize: Int, lineHeight: Int, weight: FontWeight? = null): TextStyle =
+    copy(
+        fontSize = fontSize.sp,
+        lineHeight = lineHeight.sp,
+        fontWeight = weight ?: this.fontWeight,
+    )
+
+private val TvTypography = Typography(
+    displaySmall = BaseTypography.displaySmall.tv(44, 52),
+    headlineLarge = BaseTypography.headlineLarge.tv(38, 46),
+    headlineMedium = BaseTypography.headlineMedium.tv(34, 42),
+    headlineSmall = BaseTypography.headlineSmall.tv(30, 38, FontWeight.SemiBold),
+    titleLarge = BaseTypography.titleLarge.tv(26, 34),
+    titleMedium = BaseTypography.titleMedium.tv(22, 30, FontWeight.SemiBold),
+    titleSmall = BaseTypography.titleSmall.tv(20, 28),
+    bodyLarge = BaseTypography.bodyLarge.tv(20, 30),
+    bodyMedium = BaseTypography.bodyMedium.tv(18, 28),
+    bodySmall = BaseTypography.bodySmall.tv(16, 24),
+    labelLarge = BaseTypography.labelLarge.tv(18, 24, FontWeight.Medium),
+    labelMedium = BaseTypography.labelMedium.tv(16, 22),
+    labelSmall = BaseTypography.labelSmall.tv(15, 20),
+)
+
 @Composable
 fun ZhuijuTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    isTv: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(
-        colorScheme = if (darkTheme) DarkColors else LightColors,
+        // 电视端强制深色：浅色大面积白底在电视上刺眼，也会让 OLED 面板耗电
+        colorScheme = if (darkTheme || isTv) DarkColors else LightColors,
+        typography = if (isTv) TvTypography else BaseTypography,
         shapes = AppShapes,
         content = content,
     )

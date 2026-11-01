@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android TV 桌面横幅（banner），规范尺寸 320x180。
+  用矢量绘制，避免额外位图资源；桌面会自动在下方显示应用名称。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+
+    <!-- 深色底 -->
+    <path
+        android:fillColor="#0E1A18"
+        android:pathData="M0,0h320v180h-320z" />
+
+    <!-- 左侧装饰色块 -->
+    <path
+        android:fillColor="#123B36"
+        android:pathData="M0,0h96v180h-96z" />
+
+    <!-- 播放三角 -->
+    <path
+        android:fillColor="#74D8C6"
+        android:pathData="M36,66 L36,114 A6,6 0 0,0 45.2,119 L81.2,95 A6,6 0 0,0 81.2,85 L45.2,61 A6,6 0 0,0 36,66 Z" />
+
+    <!-- 右侧三行列表示意 -->
+    <path
+        android:fillColor="#2A3532"
+        android:pathData="M120,44h168a8,8 0 0,1 8,8v20a8,8 0 0,1 -8,8h-168a8,8 0 0,1 -8,-8v-20a8,8 0 0,1 8,-8z" />
+    <path
+        android:fillColor="#2A3532"
+        android:pathData="M120,90h140a8,8 0 0,1 8,8v20a8,8 0 0,1 -8,8h-140a8,8 0 0,1 -8,-8v-20a8,8 0 0,1 8,-8z" />
+    <path
+        android:fillColor="#2A3532"
+        android:pathData="M120,136h112a8,8 0 0,1 8,8v12a8,8 0 0,1 -8,8h-112a8,8 0 0,1 -8,-8v-12a8,8 0 0,1 8,-8z" />
+
+    <!-- 强调条 -->
+    <path
+        android:fillColor="#F4BF5B"
+        android:pathData="M120,44h6v128h-6z" />
+</vector>

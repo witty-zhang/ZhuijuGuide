@@ -1,6 +1,7 @@
 package com.lzzhang.zhuijuguide.ui.screens
 
 import android.view.WindowManager
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +41,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.lzzhang.zhuijuguide.ui.LocalIsTv
 
 @OptIn(ExperimentalMaterial3Api::class)
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -51,6 +53,7 @@ fun PlayerScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val isTv = LocalIsTv.current
     var playbackError by remember { mutableStateOf<String?>(null) }
     val player = remember {
         ExoPlayer.Builder(context).build().apply {
@@ -87,6 +90,43 @@ fun PlayerScreen(
         onDispose {
             window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
+    }
+
+    if (isTv) {
+        // 电视端：全屏播放，不占用画面显示标题栏。
+        // PlayerView 自身是 focusable 的，拿到焦点后方向键/确认键直接控制播放器。
+        BackHandler(onBack = onBack)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black),
+            contentAlignment = Alignment.Center,
+        ) {
+            AndroidView(
+                factory = { viewContext ->
+                    PlayerView(viewContext).apply {
+                        useController = true
+                        setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
+                        setControllerShowTimeoutMs(6000)
+                        this.player = player
+                        isFocusable = true
+                        isFocusableInTouchMode = true
+                        requestFocus()
+                    }
+                },
+                modifier = Modifier.fillMaxSize(),
+                update = { view -> view.player = player },
+            )
+            playbackError?.let { message ->
+                Text(
+                    text = "无法播放：$message",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White,
+                    modifier = Modifier.padding(24.dp),
+                )
+            }
+        }
+        return
     }
 
     Scaffold(

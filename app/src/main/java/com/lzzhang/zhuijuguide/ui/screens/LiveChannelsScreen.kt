@@ -34,11 +34,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.lzzhang.zhuijuguide.model.MediaResource
 import com.lzzhang.zhuijuguide.ui.GuideUiState
+import com.lzzhang.zhuijuguide.ui.LocalIsTv
+import com.lzzhang.zhuijuguide.ui.components.TvFocusCard
+import com.lzzhang.zhuijuguide.ui.components.rememberTvInitialFocus
 
 /**
  * 单个直播源展开后的频道列表。频道最多有几千路，
@@ -184,6 +188,8 @@ fun LiveChannelsScreen(
                     if (channels.isEmpty()) {
                         EmptySearch("没有匹配的频道", "换个关键词再试一次")
                     } else {
+                        val firstFocus = rememberTvInitialFocus(channels.firstOrNull()?.id)
+                        val tv = LocalIsTv.current
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 24.dp),
@@ -193,6 +199,12 @@ fun LiveChannelsScreen(
                                 ChannelRow(
                                     channel = channel,
                                     onClick = { onChannelClick(channel) },
+                                    isTv = tv,
+                                    focusRequester = if (tv && channel.id == channels.first().id) {
+                                        firstFocus
+                                    } else {
+                                        null
+                                    },
                                 )
                             }
                         }
@@ -204,15 +216,16 @@ fun LiveChannelsScreen(
 }
 
 @Composable
-private fun ChannelRow(channel: MediaResource, onClick: () -> Unit) {
+private fun ChannelRow(
+    channel: MediaResource,
+    onClick: () -> Unit,
+    isTv: Boolean = false,
+    focusRequester: FocusRequester? = null,
+) {
     // 「直播源」是来源标签，其后才是文件里的分组
     val group = channel.tags.drop(1).firstOrNull()
-    Surface(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
-    ) {
+
+    val content: @Composable () -> Unit = {
         Row(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 11.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -249,6 +262,25 @@ private fun ChannelRow(channel: MediaResource, onClick: () -> Unit) {
                 contentDescription = "播放",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+    }
+
+    if (isTv) {
+        TvFocusCard(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth(),
+            focusRequester = focusRequester,
+        ) {
+            content()
+        }
+    } else {
+        Surface(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
+        ) {
+            content()
         }
     }
 }

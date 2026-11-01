@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  电视形态（uiMode = television）下覆盖主题。
+
+  手机端是浅色主题、白底窗口；电视端 Compose 用的是深色配色，
+  如果沿用它，冷启动那一两帧会闪白，在暗环境下很刺眼。
+-->
+<resources>
+    <style name="Theme.ZhuijuGuide" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/black</item>
+    </style>
+</resources>

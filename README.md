@@ -12,6 +12,7 @@
 - 搜索、收藏和详情面板
 - 直播源订阅：点一个源就把清单下载下来展开成频道，TXT（`频道名,地址` + `分组名,#genre#`）与 M3U / M3U8 两种写法都认，UTF-8 / GBK 自动识别
 - 本地 M3U / M3U8 播放列表导入，频道统一归在「M3U / M3U8」分类下，走 Media3 原生播放
+- 同一个 APK 支持 Android TV / 电视盒子，按 `uiMode` 自动切换为电视界面（网格布局 + 遥控器焦点 + 左侧导航 + 强制深色）
 - 浅色/深色主题
 
 ## 可用性检测
@@ -45,6 +46,34 @@ UA 取 WebView 默认值，和 APP 内实际打开站点时一致。判定规则
 | VMA | `https://pan.vma.cc/down.php/f83b92a24d61858666f13c5db938a292.txt` | 下载 TXT 清单，展开约 4000 路频道 |
 | 饭太硬 | `http://www.饭太硬.cc/tv` | 实测会 302 回站点首页，属于导航站，在应用内网页打开 |
 | 肥猫 | `http://肥猫.net/tv` | 返回 TVBox 配置（spider 接口），应用内打开是空白页，需要在 TVBox 客户端里导入这个地址 |
+
+## 电视端
+
+同一个 APK 同时支持手机和电视，启动时按 `uiMode` 自动选择界面，不需要单独打包。
+
+| 判断依据 | 说明 |
+| --- | --- |
+| `uiMode & UI_MODE_TYPE_MASK == UI_MODE_TYPE_TELEVISION` | 主判断，Android TV / Google TV 都会设置 |
+| `FEATURE_LEANBACK` 且没有 `FEATURE_TOUCHSCREEN` | 少数盒子不设 uiMode 时兜底 |
+
+电视端与手机端的差异：
+
+- 清单里声明 `LEANBACK_LAUNCHER` 和 320×180 的 `banner`，否则电视桌面根本不显示入口
+- 首页从单列列表换成 3 列网格，字号整体上调（正文 16sp 起，标题 30sp）
+- 所有可点区域带焦点描边 + 1.05 倍放大，遥控器能看清光标落在哪
+- 导航从底部改为左侧竖栏，避免和网格的焦点路径互相抢
+- 详情从底部弹层改为居中对话框（弹层在电视上会被裁到屏幕外）
+- 播放页全屏，不显示标题栏；返回键交给 `BackHandler`
+- 强制深色配色，窗口背景同步改黑（`values-television/themes.xml`），避免冷启动闪白
+
+装到电视盒子：
+
+```bash
+adb connect <盒子IP>:5555      # 先在盒子上打开「网络调试」/「ADB 调试」
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+也可以把 APK 拷到 U 盘，用电视上的文件管理器直接安装。
 
 ## 构建
 
